@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  writefreely:
+  - apiVersion: v2
+    appVersion: v0.15.1
+    created: "2025-06-07T19:33:39.486344424Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    description: A Helm chart for deploying writefreely on Kubernetes
+    digest: 5c0528ad2c47c6829bf1b0f4de81ab0b3700a82cb1e7eb6c279fe1682e8364c8
+    maintainers:
+    - name: jessebot
+      url: https://jessebot.work
+    name: writefreely
+    type: application
+    urls:
+    - https://github.com/jessebot/writefreely-helm-chart/releases/download/writefreely-0.1.1/writefreely-0.1.1.tgz
+    version: 0.1.1
+generated: "2025-06-07T19:33:39.486355504Z"
