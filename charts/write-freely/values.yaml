@@ -1,0 +1,232 @@
+# Default values for writefreely.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: ghcr.io/writefreely/writefreely
+  # -- This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# -- This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+
+# -- This is to override the chart name.
+nameOverride: ""
+
+# -- this really overrides the chart name for real
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+# -- This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # -- This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # -- This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 80
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  # -- enable ingress from outside the k8s cluster
+  enabled: false
+  # -- increasee class name, e.g. nginx
+  className: ""
+  # -- annotations of the ingress object
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- resources for the writefreely pod
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+resources: {}
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Additional volumes on the output Deployment definition.
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+volumes: []
+
+# -- Additional volumeMounts on the output Deployment definition.
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+volumeMounts: []
+
+nodeSelector: {}
+
+# -- pod tolerations of node taints
+tolerations: []
+
+# -- pod affinity
+affinity: {}
+
+# -- extra environment variables
+extraEnv: []
+
+externalDatabase:
+  # -- enable external database. requires mysql.enabled=false
+  enabled: false
+  # -- hostname of the external database server
+  hostname: "mysql"
+  # -- hostname of the external database port
+  port: "3306"
+  # -- hostname of the external database
+  database: "writefreely"
+  # -- hostname of the external database username
+  username: "writefreely"
+  # -- hostname of the external database password
+  password: ""
+
+  existingSecret:
+    # -- name of an existing K8s Secret to use. If set, ignores externalDatabase.hostname/port/username/password
+    name: ""
+    secretKeys:
+      # -- key in existing Secret for database external database hostname
+      hostname: "mysql-hostname"
+      # -- key in existing Secret for database external database port
+      port: "mysql-port"
+      # -- key in existing Secret for database external database name
+      database: "mysql-database"
+      # -- key in existing Secret for database external database username
+      username: "mysql-username"
+      # -- key in existing Secret for database external database password
+      password: "mysql-password"
+
+mysql:
+  # -- enable the bitnami MySQL helm chart see all possible values:
+  # https://github.com/bitnami/charts/blob/main/bitnami/mysql/values.yaml
+  enabled: true
+
+  auth:
+    # -- Password for the `root` user. Ignored if existing secret is provided
+    # ref: https://github.com/bitnami/containers/tree/main/bitnami/mysql#setting-the-root-password-on-first-run
+    rootPassword: ""
+
+    # -- Whether to create the .Values.auth.database or not
+    # ref: https://github.com/bitnami/containers/tree/main/bitnami/mysql#creating-a-database-on-first-run
+    createDatabase: true
+
+    # -- Name for a custom database to create
+    # ref: https://github.com/bitnami/containers/tree/main/bitnami/mysql#creating-a-database-on-first-run
+    database: "writefreely"
+
+    # -- Name for a custom user to create
+    # ref: https://github.com/bitnami/containers/tree/main/bitnami/mysql#creating-a-database-user-on-first-run
+    username: "writefreely"
+
+    # -- Password for the new user. Ignored if existing secret is provided
+    password: ""
+
+    # -- MySQL replication user
+    # ref: https://github.com/bitnami/containers/tree/main/bitnami/mysql#setting-up-a-replication-cluster
+    replicationUser: replicator
+
+    # -- MySQL replication user password. Ignored if existing secret is provided
+    replicationPassword: ""
+
+    # -- Use existing secret for password details. The secret has to contain the keys `mysql-root-password`, `mysql-replication-password` and `mysql-password`
+    # NOTE: When it's set the auth.rootPassword, auth.password, auth.replicationPassword are ignored.
+    existingSecret: ""
+
+    # -- Mount credentials as files instead of using an environment variable
+    usePasswordFiles: true
+
+    # -- Use custom password files when `auth.usePasswordFiles` is set to `true`. Define path for keys `root` and `user`, also define `replicator` if `architecture` is set to `replication`
+    # Example:
+    # customPasswordFiles:
+    #   root: /vault/secrets/mysql-root
+    #   user: /vault/secrets/mysql-user
+    #   replicator: /vault/secrets/mysql-replicator
+    customPasswordFiles: {}
+
+    # -- Sets the authentication policy, by default it will use `* ,,`
+    # ref: https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_authentication_policy
+    authenticationPolicy: ""
+
+  # -- Dictionary of initdb scripts
+  # Specify dictionary of scripts to be run at first boot
+  # Example:
+  # initdbScripts:
+  #   my_init_script.sh: |
+  #      #!/bin/bash
+  #      echo "Do something."
+  initdbScripts: {}
+
+  # -- ConfigMap with the initdb scripts (Note: Overrides `initdbScripts`)
+  initdbScriptsConfigMap: ""
+
+  # -- Dictionary of startdb scripts
+  # Specify dictionary of scripts to be run every time the container is started
+  # Example:
+  # startdbScripts:
+  #   my_start_script.sh: |
+  #      #!/bin/bash
+  #      echo "Do something."
+  startdbScripts: {}
