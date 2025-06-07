@@ -59,7 +59,25 @@ spec:
                   {{- else }}
                   key: {{ .Values.externalDatabase.existingSecret.secretKeys.username }}
                   {{- end }}
+            - name: WF_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "writefreely.mysql.secretName" . }}
+                  {{- if .Values.mysql.enabled }}
+                  key: mysql-username
+                  {{- else }}
+                  key: {{ .Values.externalDatabase.existingSecret.secretKeys.username }}
+                  {{- end }}
             - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "writefreely.mysql.secretName" . }}
+                  {{- if .Values.mysql.enabled }}
+                  key: mysql-password
+                  {{- else }}
+                  key: {{ .Values.externalDatabase.existingSecret.secretKeys.password }}
+                  {{- end }}
+            - name: WF_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "writefreely.mysql.secretName" . }}
